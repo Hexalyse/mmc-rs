@@ -1,4 +1,6 @@
-use ddc_hi::{Ddc, Display};
+use ddc_hi::{Ddc, Display, Backend};
+use retry::retry;
+use retry::delay::Fixed;
 use std::env;
 
 fn main() -> Result<(), std::io::Error> {
@@ -12,26 +14,28 @@ fn main() -> Result<(), std::io::Error> {
     let quiet: bool = args.len() > 2 && String::from("quiet").eq(&args[2]);
 
     for mut display in Display::enumerate() {
+        if display.info.backend != Backend::WinApi {
+            continue;
+        }
         display.update_capabilities().ok();
         if !quiet {
             println!("Display detected: {:?} {}: {:?} {:?}",
                 display.info.backend, display.info.id,
                 display.info.manufacturer_id, display.info.model_name
             );
+        };
+        if !quiet {
+            let value = display.handle.get_vcp_feature(0x10).unwrap();
+            println!("Previous brightness: {:?}", value.value());
         }
-        if display.info.manufacturer_id != None {
-            if !quiet {
-                let value = display.handle.get_vcp_feature(0x10).unwrap();
-                println!("Previous brightness: {:?}", value.value());
-            }
-            display.handle.set_vcp_feature(0x10, brightness).unwrap();
-            if !quiet {
-                let value = display.handle.get_vcp_feature(0x10).unwrap();
-                println!("New brightness: {:?}", value.value());
-            }
-        } else if !quiet {
-            println!("Doing nothing because the display has no Manufacturer");
+        let _result = retry(Fixed::from_millis(100).take(10), || {
+            display.handle.set_vcp_feature(0x10, brightness)
+        });
+        if !quiet {
+            let value = display.handle.get_vcp_feature(0x10).unwrap();
+            println!("New brightness: {:?}", value.value());
         }
+
     }
     Ok(())
 }
