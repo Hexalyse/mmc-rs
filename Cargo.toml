@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 ddc-hi = "0.4.1"
+serde_yaml = "0.8.4"
 
 [profile.release]
 strip = true
