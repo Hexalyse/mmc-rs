@@ -17,17 +17,15 @@ fn main() -> Result<(), std::io::Error> {
         if display.info.backend != Backend::WinApi {
             continue;
         }
-        display.update_capabilities().ok();
         if !quiet {
+            display.update_capabilities().ok();
             println!("Display detected: {:?} {}: {:?} {:?}",
                 display.info.backend, display.info.id,
                 display.info.manufacturer_id, display.info.model_name
             );
-        };
-        if !quiet {
             let value = display.handle.get_vcp_feature(0x10).unwrap();
             println!("Previous brightness: {:?}", value.value());
-        }
+        };
         let _result = retry(Fixed::from_millis(100).take(10), || {
             display.handle.set_vcp_feature(0x10, brightness)
         });
