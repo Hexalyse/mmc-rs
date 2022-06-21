@@ -1,5 +1,5 @@
 # mmc
-Minimalist Monitor Control - a minimalist CLI app written in Rust to read and set VCP values for your monitor via the DDC protocol.
+Minimalist Monitor Control - a minimalist CLI app written in Rust to read and set VCP features for your monitor via the DDC/CI protocol.
 
 ## What are VCP / VCP Features ?
 
