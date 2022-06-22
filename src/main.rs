@@ -7,10 +7,10 @@ use clap::Parser;
 #[clap(author="Hexalyse", version, about="Minimalist Monitor Control")]
 struct CliArguments {
     /// Get VCP value
-    #[clap(short, long, conflicts_with="set")]
+    #[clap(short, long, conflicts_with="set", required_unless_present="set")]
     get: bool,
     /// Set VCP value
-    #[clap(short, long, conflicts_with="get")]
+    #[clap(short, long, conflicts_with="get", required_unless_present="get")]
     set: bool,
     /// The VCP identifier (eg: 10 for brightness)
     #[clap(short = 'i')]
