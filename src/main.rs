@@ -6,9 +6,12 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[clap(author="Hexalyse", version, about="Minimalist Monitor Control")]
 struct CliArguments {
-    /// Action to use. Can be 'get' or 'set'
-    #[clap(short)]
-    action: String,
+    /// Get VCP value
+    #[clap(short, long, conflicts_with="set")]
+    get: bool,
+    /// Set VCP value
+    #[clap(short, long, conflicts_with="get")]
+    set: bool,
     /// The VCP identifier (eg: 10 for brightness)
     #[clap(short = 'i')]
     vcp_id: String,
@@ -31,7 +34,7 @@ fn main() -> Result<(), std::io::Error> {
         Err(_) => panic!("Problem parsing the VCP id."),
     };
 
-    if args.action == "set" {
+    if args.set {
         if args.vcp_value == None {
             println!("Please specify a VCP value.");
             return Ok(());
@@ -56,7 +59,7 @@ fn main() -> Result<(), std::io::Error> {
                 display.handle.set_vcp_feature(vcp_id, vcp_value)
             });
         }
-    } else if args.action == "get" {
+    } else if args.get {
         let backend = match args.backend.as_deref() {
             Some("winapi") => Backend::WinApi,
             Some("nvapi") => Backend::Nvapi,
