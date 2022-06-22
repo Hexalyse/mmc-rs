@@ -12,12 +12,12 @@ Just clone the repository, then run `cargo run`, or `cargo build --release` to b
 Help:
 
 ```
-mmc 1.1.0
+mmc 1.2.0
 Hexalyse
 Minimalist Monitor Control
 
 USAGE:
-    mmc [OPTIONS] -i <VCP_ID>
+    mmc.exe [OPTIONS] -i <VCP_ID> <--get|--set>
 
 OPTIONS:
     -b <BACKEND>          Only act on monitors using this backend [possible values: winapi, nvapi,
@@ -26,8 +26,8 @@ OPTIONS:
     -h, --help            Print help information
     -i <VCP_ID>           The VCP identifier (eg: 10 for brightness)
     -s, --set             Set VCP value
-    -u                    Force update the capabilities before writing the VCP value (needed on some
-                          screens?)
+    -u                    Force update the capabilities before reading or writing the VCP value
+                          (needed on some screens?)
     -v <VCP_VALUE>        The VCP value (only used for 'set')
     -V, --version         Print version information
 ```
