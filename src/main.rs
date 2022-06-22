@@ -26,6 +26,17 @@ struct CliArguments {
     backend: Option<String>
 }
 
+fn get_backend(backend: Option<&str>) -> Backend {
+    match backend {
+        Some("winapi") => Backend::WinApi,
+        Some("nvapi") => Backend::Nvapi,
+        Some("i2c") => Backend::I2cDevice,
+        Some("macos") => Backend::MacOS,
+        None => Backend::Nvapi,
+        _ => panic!("Unknown backend: {}", backend.unwrap())
+    }
+}
+
 fn main() -> Result<(), std::io::Error> {
 
     let args = CliArguments::parse();
@@ -40,14 +51,7 @@ fn main() -> Result<(), std::io::Error> {
             return Ok(());
         }
         let vcp_value = args.vcp_value.unwrap();
-        let backend = match args.backend.as_deref() {
-            Some("winapi") => Backend::WinApi,
-            Some("nvapi") => Backend::Nvapi,
-            Some("i2c") => Backend::I2cDevice,
-            Some("macos") => Backend::MacOS,
-            None => Backend::Nvapi,
-            Some(&_) => Backend::Nvapi
-        };
+        let backend = get_backend(args.backend.as_deref());
         for mut display in Display::enumerate() {
             if !(args.backend == None) && backend != display.info.backend {
                 continue;
@@ -60,14 +64,7 @@ fn main() -> Result<(), std::io::Error> {
             });
         }
     } else if args.get {
-        let backend = match args.backend.as_deref() {
-            Some("winapi") => Backend::WinApi,
-            Some("nvapi") => Backend::Nvapi,
-            Some("i2c") => Backend::I2cDevice,
-            Some("macos") => Backend::MacOS,
-            None => Backend::Nvapi,
-            Some(&_) => Backend::Nvapi
-        };
+        let backend = get_backend(args.backend.as_deref());
         for mut display in Display::enumerate() {
             if !(args.backend == None) && backend != display.info.backend {
                 continue;
