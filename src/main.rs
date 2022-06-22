@@ -2,15 +2,17 @@ use ddc_hi::{Ddc, Display, Backend};
 use retry::retry;
 use retry::delay::Fixed;
 use clap::Parser;
+use clap::ArgGroup;
 
 #[derive(Parser, Debug)]
 #[clap(author="Hexalyse", version, about="Minimalist Monitor Control")]
+#[structopt(group = ArgGroup::with_name("action").required(true))]
 struct CliArguments {
     /// Get VCP value
-    #[clap(short, long, conflicts_with="set", required_unless_present="set")]
+    #[clap(short, long, group="action")]
     get: bool,
     /// Set VCP value
-    #[clap(short, long, conflicts_with="get", required_unless_present="get")]
+    #[clap(short, long, group="action")]
     set: bool,
     /// The VCP identifier (eg: 10 for brightness)
     #[clap(short = 'i')]
