@@ -9,6 +9,29 @@ VCP stands for Virtual Control Panel. VCP features basically are monitor setting
 
 Just clone the repository, then run `cargo run`, or `cargo build --release` to build a release binary.
 
+Help:
+
+```
+mmc 1.1.0
+Hexalyse
+Minimalist Monitor Control
+
+USAGE:
+    mmc [OPTIONS] -i <VCP_ID>
+
+OPTIONS:
+    -b <BACKEND>          Only act on monitors using this backend [possible values: winapi, nvapi,
+                          i2c, macos]
+    -g, --get             Get VCP value
+    -h, --help            Print help information
+    -i <VCP_ID>           The VCP identifier (eg: 10 for brightness)
+    -s, --set             Set VCP value
+    -u                    Force update the capabilities before writing the VCP value (needed on some
+                          screens?)
+    -v <VCP_VALUE>        The VCP value (only used for 'set')
+    -V, --version         Print version information
+```
+
 ## Alternatives
 
 This program essentially does what [ddcset-rs](https://github.com/arcnmx/ddcset-rs) does, except `ddcset-rs` didn't work on my hardware : for some reason my drivers sometimes fail to communicate with the monitor, and I get I2C communication errors. Since the problem is totally random, I fixed it in `mmc` by retrying until it works. It's ugly, but it works.
