@@ -18,7 +18,7 @@ struct CliArguments {
     /// The VCP value (only used for 'set')
     #[clap(short)]
     vcp_value: Option<u16>,
-    /// Force update the capabilities before writing the VCP value (needed on some screens?)
+    /// Force update the capabilities before reading or writing the VCP value (needed on some screens?)
     #[clap(short, takes_value = false)]
     update_capabilities: bool,
     /// Only act on monitors using this backend [possible values: winapi, nvapi, i2c, macos]
@@ -44,6 +44,7 @@ fn main() -> Result<(), std::io::Error> {
         Ok(num) => num,
         Err(_) => panic!("Problem parsing the VCP id."),
     };
+    let backend = get_backend(args.backend.as_deref());
 
     if args.set {
         if args.vcp_value == None {
@@ -51,7 +52,6 @@ fn main() -> Result<(), std::io::Error> {
             return Ok(());
         }
         let vcp_value = args.vcp_value.unwrap();
-        let backend = get_backend(args.backend.as_deref());
         for mut display in Display::enumerate() {
             if !(args.backend == None) && backend != display.info.backend {
                 continue;
@@ -64,7 +64,6 @@ fn main() -> Result<(), std::io::Error> {
             });
         }
     } else if args.get {
-        let backend = get_backend(args.backend.as_deref());
         for mut display in Display::enumerate() {
             if !(args.backend == None) && backend != display.info.backend {
                 continue;
@@ -79,7 +78,7 @@ fn main() -> Result<(), std::io::Error> {
                 display.info.backend, display.info.manufacturer_id, display.info.model_name, vcp_id, value);
         }
     } else {
-        println!("Error: The action must either be 'get' or 'set'.");
+        panic!("Please set either the -g or -s flag (get or set).");
     }
 
     Ok(())
