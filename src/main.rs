@@ -17,7 +17,7 @@ struct CliArguments {
     /// The VCP identifier (eg: 10 for brightness)
     #[clap(short = 'i')]
     vcp_id: String,
-    /// The VCP value (only used for 'set')
+    /// The VCP value (only used with '-s/--set')
     #[clap(short)]
     vcp_value: Option<u16>,
     /// Force update the capabilities before reading or writing the VCP value (needed on some screens?)
