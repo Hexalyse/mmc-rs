@@ -28,7 +28,7 @@ OPTIONS:
     -s, --set             Set VCP value
     -u                    Force update the capabilities before reading or writing the VCP value
                           (needed on some screens?)
-    -v <VCP_VALUE>        The VCP value (only used for 'set')
+    -v <VCP_VALUE>        The VCP value (only used with '-s/--set')
     -V, --version         Print version information
 ```
 
