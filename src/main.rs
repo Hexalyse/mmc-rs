@@ -79,8 +79,6 @@ fn main() -> Result<(), std::io::Error> {
             println!("[{}] {:?} {:?} - VCP {}: {:?}",
                 display.info.backend, display.info.manufacturer_id, display.info.model_name, vcp_id, value);
         }
-    } else {
-        panic!("Please set either the -g or -s flag (get or set).");
     }
 
     Ok(())
