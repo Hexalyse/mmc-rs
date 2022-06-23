@@ -12,7 +12,7 @@ Just clone the repository, then run `cargo run`, or `cargo build --release` to b
 Help:
 
 ```
-mmc 1.2.0
+mmc 1.3.0
 Hexalyse
 Minimalist Monitor Control
 
@@ -20,12 +20,14 @@ USAGE:
     mmc.exe [OPTIONS] -i <VCP_ID> <--get|--set>
 
 OPTIONS:
+        --add             Add the value to the current value
     -b <BACKEND>          Only act on monitors using this backend [possible values: winapi, nvapi,
                           i2c, macos]
     -g, --get             Get VCP value
     -h, --help            Print help information
     -i <VCP_ID>           The VCP identifier (eg: 10 for brightness)
     -s, --set             Set VCP value
+        --subtract        Subtract the value from the current value
     -u                    Force update the capabilities before reading or writing the VCP value
                           (needed on some screens?)
     -v <VCP_VALUE>        The VCP value (only used with '-s/--set')
