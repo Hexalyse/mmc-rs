@@ -7,13 +7,14 @@ use retry::retry;
 
 #[derive(Parser, Debug)]
 #[clap(author = "Hexalyse", version, about = "Minimalist Monitor Control")]
-#[structopt(group = ArgGroup::with_name("action").required(true))]
+#[structopt(group = ArgGroup::with_name("vcp_action").required(true))]
+#[structopt(group = ArgGroup::with_name("relative_set").required(false))]
 struct CliArguments {
     /// Get VCP value
-    #[clap(short, long, group = "action")]
+    #[clap(short, long, group = "vcp_action")]
     get: bool,
     /// Set VCP value
-    #[clap(short, long, group = "action")]
+    #[clap(short, long, group = "vcp_action")]
     set: bool,
     /// The VCP identifier (eg: 10 for brightness)
     #[clap(short = 'i')]
@@ -28,10 +29,10 @@ struct CliArguments {
     #[clap(short)]
     backend: Option<String>,
     /// Add the value to the current value
-    #[clap(long)]
+    #[clap(long, group = "relative_set")]
     add: bool,
     /// Subtract the value from the current value
-    #[clap(long)]
+    #[clap(long, group = "relative_set")]
     subtract: bool,
 }
 
