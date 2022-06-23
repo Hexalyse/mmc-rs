@@ -1,19 +1,19 @@
-use ddc_hi::{Ddc, Display, Backend, VcpValue};
 use anyhow;
-use retry::retry;
-use retry::delay::Fixed;
-use clap::Parser;
 use clap::ArgGroup;
+use clap::Parser;
+use ddc_hi::{Backend, Ddc, Display, VcpValue};
+use retry::delay::Fixed;
+use retry::retry;
 
 #[derive(Parser, Debug)]
-#[clap(author="Hexalyse", version, about="Minimalist Monitor Control")]
+#[clap(author = "Hexalyse", version, about = "Minimalist Monitor Control")]
 #[structopt(group = ArgGroup::with_name("action").required(true))]
 struct CliArguments {
     /// Get VCP value
-    #[clap(short, long, group="action")]
+    #[clap(short, long, group = "action")]
     get: bool,
     /// Set VCP value
-    #[clap(short, long, group="action")]
+    #[clap(short, long, group = "action")]
     set: bool,
     /// The VCP identifier (eg: 10 for brightness)
     #[clap(short = 'i')]
@@ -42,24 +42,30 @@ fn get_backend(backend: Option<&str>) -> Backend {
         Some("i2c") => Backend::I2cDevice,
         Some("macos") => Backend::MacOS,
         None => Backend::Nvapi,
-        _ => panic!("Unknown backend: {}", backend.unwrap())
+        _ => panic!("Unknown backend: {}", backend.unwrap()),
     }
 }
 
-fn set_vcp_with_retry(vcp_id: u8, vcp_value: u16, display: &mut Display) -> Result<(), retry::Error<anyhow::Error>> {
+fn set_vcp_with_retry(
+    vcp_id: u8,
+    vcp_value: u16,
+    display: &mut Display,
+) -> Result<(), retry::Error<anyhow::Error>> {
     retry(Fixed::from_millis(100).take(20), || {
         display.handle.set_vcp_feature(vcp_id, vcp_value)
     })
 }
 
-fn get_vcp_with_retry(vcp_id: u8, display: &mut Display) -> Result<VcpValue, retry::Error<anyhow::Error>> {
+fn get_vcp_with_retry(
+    vcp_id: u8,
+    display: &mut Display,
+) -> Result<VcpValue, retry::Error<anyhow::Error>> {
     retry(Fixed::from_millis(100).take(20), || {
         display.handle.get_vcp_feature(vcp_id)
     })
 }
 
 fn main() -> Result<(), std::io::Error> {
-
     let args = CliArguments::parse();
     let vcp_id = match u8::from_str_radix(&args.vcp_id, 16) {
         Ok(num) => num,
@@ -86,11 +92,11 @@ fn main() -> Result<(), std::io::Error> {
                 });
                 let current_value = current_value.unwrap().value();
                 let final_value = {
-                        if args.add {
-                            current_value + vcp_value
-                        } else {
-                            current_value - vcp_value
-                        }
+                    if args.add {
+                        current_value + vcp_value
+                    } else {
+                        current_value - vcp_value
+                    }
                 };
                 set_vcp_with_retry(vcp_id, final_value, &mut display).unwrap();
                 continue;
@@ -106,8 +112,14 @@ fn main() -> Result<(), std::io::Error> {
                 display.update_capabilities().ok();
             }
             let value = get_vcp_with_retry(vcp_id, &mut display).unwrap();
-            println!("[{}] {:?} {:?} - VCP {}: {:?}",
-                display.info.backend, display.info.manufacturer_id, display.info.model_name, vcp_id, value.value());
+            println!(
+                "[{}] {:?} {:?} - VCP {}: {:?}",
+                display.info.backend,
+                display.info.manufacturer_id,
+                display.info.model_name,
+                vcp_id,
+                value.value()
+            );
         }
     }
 
