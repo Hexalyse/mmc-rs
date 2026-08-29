@@ -1,16 +1,15 @@
 [package]
 name = "mmc"
-version = "1.3.0"
+version = "2.0.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Minimalist DDC/CI monitor control CLI"
+repository = "https://github.com/Hexalyse/mmc-rs"
 
 [dependencies]
 ddc-hi = "0.4.1"
-retry = "1.3.1"
-serde_yaml = "0.8.4"
-clap = { version = "3.0", features = ["derive"] }
-anyhow = "1.0.58"
+mccs-caps = "0.1.3"
+clap = { version = "4.6.6", features = ["derive"] }
+anyhow = "1.0.104"
 
 [profile.release]
 strip = true
