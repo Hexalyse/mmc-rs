@@ -20,30 +20,30 @@ cd mmc-rs
 cargo build --release
 ```
 
-The executable is written to `target/release/mmc.exe` on Windows.
+The executable is written to `target/release/mmc-rs.exe` on Windows.
 
 > [!NOTE]
-> Windows already includes `C:\Windows\System32\mmc.exe` for Microsoft Management Console. Invoke this program by its full path, keep it in a dedicated directory, or rename the binary before putting it on `PATH`.
+> The `mmc-rs` name avoids a conflict with Windows' built-in `C:\Windows\System32\mmc.exe` Microsoft Management Console.
 
 ## Usage
 
 Read the current brightness:
 
 ```powershell
-.\target\release\mmc.exe brightness
+.\target\release\mmc-rs.exe brightness
 ```
 
 Set an absolute brightness:
 
 ```powershell
-.\target\release\mmc.exe brightness 50
+.\target\release\mmc-rs.exe brightness 50
 ```
 
 Increase or decrease brightness relative to its current value:
 
 ```powershell
-.\target\release\mmc.exe brightness +10
-.\target\release\mmc.exe brightness -10
+.\target\release\mmc-rs.exe brightness +10
+.\target\release\mmc-rs.exe brightness -10
 ```
 
 Relative changes are clamped to the `0..maximum` range reported by the monitor.
@@ -51,40 +51,40 @@ Relative changes are clamped to the `0..maximum` range reported by the monitor.
 The same absolute/relative syntax works with continuous controls:
 
 ```powershell
-.\target\release\mmc.exe contrast -5
-.\target\release\mmc.exe volume +5
-.\target\release\mmc.exe red-gain 50
+.\target\release\mmc-rs.exe contrast -5
+.\target\release\mmc-rs.exe volume +5
+.\target\release\mmc-rs.exe red-gain 50
 ```
 
 Discover the controls advertised by the monitor:
 
 ```powershell
-.\target\release\mmc.exe displays
-.\target\release\mmc.exe controls
-.\target\release\mmc.exe capabilities
+.\target\release\mmc-rs.exe displays
+.\target\release\mmc-rs.exe controls
+.\target\release\mmc-rs.exe capabilities
 ```
 
 Use any arbitrary VCP feature code. VCP codes are hexadecimal; values are decimal unless prefixed by `0x`:
 
 ```powershell
 # Read VCP 0x10
-.\target\release\mmc.exe vcp 10
+.\target\release\mmc-rs.exe vcp 10
 
 # Select a monitor-specific input value
-.\target\release\mmc.exe vcp 60 0x0F
+.\target\release\mmc-rs.exe vcp 60 0x0F
 ```
 
 Use `--display` to target a monitor by a case-insensitive substring of its ID, model, manufacturer, or serial number:
 
 ```powershell
-.\target\release\mmc.exe --display MO27Q28G brightness +10
+.\target\release\mmc-rs.exe --display MO27Q28G brightness +10
 ```
 
 On Windows, the WinAPI backend is selected by default. A backend can be selected explicitly:
 
 ```powershell
-.\target\release\mmc.exe --backend winapi brightness
-.\target\release\mmc.exe --backend nvapi brightness
+.\target\release\mmc-rs.exe --backend winapi brightness
+.\target\release\mmc-rs.exe --backend nvapi brightness
 ```
 
 ## Named controls
