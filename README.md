@@ -4,10 +4,13 @@ Minimalist Monitor Control is a small command-line application for reading and c
 
 It provides friendly commands for common controls while retaining access to every raw VCP feature exposed by a monitor.
 
+On Windows it also includes a separate USB HID backend for the GIGABYTE MO27Q28G. This exposes the monitor's verified manufacturer-specific controls without requiring GIGABYTE Control Center or OSD Sidekick.
+
 ## Requirements
 
 - A monitor with DDC/CI support.
 - A display connection and graphics driver that pass DDC/CI commands through to the monitor.
+- For Gigabyte HID commands, connect the monitor's USB upstream cable. The MO27Q28G appears as the Realtek `0BDA:1100` vendor HID device.
 - Rust stable when building from source.
 
 DDC/CI changes the monitor's hardware settings. It does not dim the desktop through a software overlay. Some controls can be unavailable or locked while HDR is active.
@@ -86,6 +89,50 @@ On Windows, the WinAPI backend is selected by default. A backend can be selected
 .\target\release\mmc-rs.exe --backend winapi brightness
 .\target\release\mmc-rs.exe --backend nvapi brightness
 ```
+
+## GIGABYTE MO27Q28G USB backend
+
+The Gigabyte backend uses the monitor's USB HID protocol independently of the ordinary DDC backend. It confirms the attached display is an MO27Q28G before operating; `--force` exists for diagnostics but should not be used with an unknown Realtek-based monitor.
+
+Discover the HID endpoint and inspect the current state:
+
+```powershell
+.\target\release\mmc-rs.exe gigabyte devices
+.\target\release\mmc-rs.exe gigabyte controls
+.\target\release\mmc-rs.exe gigabyte status
+.\target\release\mmc-rs.exe gigabyte oled status
+```
+
+Read and change named controls:
+
+```powershell
+.\target\release\mmc-rs.exe gigabyte get black-equalizer
+.\target\release\mmc-rs.exe gigabyte set black-equalizer +2
+.\target\release\mmc-rs.exe gigabyte set gamma 2.2
+.\target\release\mmc-rs.exe gigabyte set picture-mode srgb
+.\target\release\mmc-rs.exe gigabyte set input displayport
+.\target\release\mmc-rs.exe gigabyte set quick-up brightness
+```
+
+Implemented control groups include:
+
+- Brightness, contrast, volume, sharpness, Black Equalizer, color temperature and RGB gains.
+- Gamma, color vibrance, Ultra Clear, low blue light, VRR and Super Resolution.
+- Picture mode, video/audio input, PIP/PBP, KVM and joystick Quick Switch assignments.
+- Crosshair, refresh-rate overlay, dashboard, game timer/counter and overlay position.
+- OSD transparency/time, status LED, firmware/HDR status, panel hours and Pixel Clean status/count.
+
+Symbolic values and safe ranges are model-specific and are shown by `gigabyte controls`. Continuous controls accept signed relative changes. Writes are read back and verified where the protocol supports it; controls locked by HDR or the active picture mode return an error instead of silently succeeding.
+
+Starting Pixel Clean is deliberately guarded because it blanks the display and can take several minutes:
+
+```powershell
+.\target\release\mmc-rs.exe gigabyte oled pixel-clean start --yes
+```
+
+Firmware flashing, custom-crosshair uploads, resident dashboard telemetry, and undocumented OLED-care controls are intentionally not exposed.
+
+The vendor command map and HID framing are based on the community research in [gigabyte-m32u-ddcctl](https://github.com/ayufan-research/gigabyte-m32u-ddcctl), [gbmonctl](https://github.com/kelvie/gbmonctl), and the accompanying [OSD Sidekick protocol notes](https://gist.github.com/kelvie/fa562c4643c4abc8d91bb192b325995b). MO27Q28G ranges and asymmetric read/write encodings are kept in a dedicated model profile.
 
 ## Named controls
 

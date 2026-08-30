@@ -7,6 +7,8 @@ use anyhow::{anyhow, bail, Context, Result};
 use clap::{Parser, Subcommand, ValueEnum};
 use ddc_hi::{Backend, Ddc, Display, DisplayInfo, VcpValue};
 
+mod gigabyte;
+
 const RETRY_ATTEMPTS: usize = 20;
 const RETRY_DELAY: Duration = Duration::from_millis(100);
 
@@ -27,6 +29,9 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Command {
+    /// Control supported Gigabyte monitors directly through their USB HID interface.
+    Gigabyte(gigabyte::GigabyteArgs),
+
     /// List detected DDC/CI displays.
     Displays,
 
@@ -296,10 +301,20 @@ const KNOWN_CONTROLS: &[Control] = &[
 ];
 
 fn main() -> Result<()> {
-    let cli = Cli::parse();
-    let displays = select_displays(&cli)?;
+    let Cli {
+        backend,
+        display,
+        command,
+    } = Cli::parse();
 
-    match cli.command {
+    let command = match command {
+        Command::Gigabyte(args) => return gigabyte::run(args),
+        command => command,
+    };
+
+    let displays = select_displays(backend, display.as_deref())?;
+    match command {
+        Command::Gigabyte(_) => unreachable!(),
         Command::Displays => list_displays(displays),
         Command::Controls => list_controls(displays),
         Command::Capabilities => print_capabilities(displays),
@@ -321,9 +336,9 @@ fn main() -> Result<()> {
     }
 }
 
-fn select_displays(cli: &Cli) -> Result<Vec<Display>> {
-    let backend = cli.backend.resolve();
-    let filter = cli.display.as_deref().map(str::to_lowercase);
+fn select_displays(backend: BackendChoice, display_filter: Option<&str>) -> Result<Vec<Display>> {
+    let backend = backend.resolve();
+    let filter = display_filter.map(str::to_lowercase);
 
     let displays: Vec<_> = Display::enumerate()
         .into_iter()
@@ -336,9 +351,7 @@ fn select_displays(cli: &Cli) -> Result<Vec<Display>> {
         .collect();
 
     if displays.is_empty() {
-        let filter_message = cli
-            .display
-            .as_deref()
+        let filter_message = display_filter
             .map(|value| format!(" matching `{value}`"))
             .unwrap_or_default();
         bail!("no DDC/CI displays found using the {backend} backend{filter_message}");

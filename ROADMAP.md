@@ -1,5 +1,17 @@
 # Improvement roadmap
 
+## GIGABYTE MO27Q28G USB HID backend
+
+Status: implemented in version 2.1.
+
+- Discover the Realtek `0BDA:1100` monitor HID endpoint without GCC or OSD Sidekick.
+- Gate operations on the MO27Q28G display identity.
+- Read and write the verified manufacturer-specific picture, color, gaming-assist, PIP/PBP, KVM, OSD, and Quick Switch controls.
+- Read firmware/HDR status, OLED panel hours, Pixel Clean state, and completed-clean count.
+- Guard manual Pixel Clean behind explicit confirmation.
+- Verify ordinary writes and handle MO27Q28G-specific asymmetric encodings for OSD time and overlay position.
+- Keep firmware flashing, unknown OLED-care selectors, dashboard telemetry streaming, and custom-crosshair upload out of the safe backend.
+
 ## 1. Safer core and useful CLI
 
 Status: implemented in the current working tree.
